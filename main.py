@@ -13,22 +13,52 @@ class SDES:
         # P10置换表
         self.P10 = [3, 5, 2, 7, 4, 0, 1, 9, 8, 6]
         # S-盒S0和S1
-        self.S0 = [[1, 0, 3, 2], [3, 2, 1, 0], [0, 2, 1, 3], [3, 1, 3, 2]]
-        self.S1 = [[0, 1, 2, 3], [2, 0, 1, 3], [3, 0, 1, 0], [2, 1, 0, 3]]
+        self.S0 = [[1, 0, 3, 2], [3, 2, 1, 0], [0, 2, 1, 3], [3, 1, 0, 2]]
+        self.S1 = [[0, 1, 2, 3], [2, 3, 1, 0], [3, 0, 1, 2], [2, 1, 0, 3]]
+        # spbox置换表
+        self.SPBOX = [2, 4, 3, 1]
 
-    # 初始置换IP
-    def IP_Transform(self, data):
 
-    # 初始逆置换IP^-1
-    def IP_INV_Transform(self, data):
+    # EP扩展
+    def expandFunction(self, data):
+        expand_data = []
+        for i in range(8):
+            expand_data.append(data[self.EP[i]-1])
+        return expand_data
+    # 异或运算
+    def xorCalculation(self, data1, data2):
+        result = []
+        for i in range(len(data1)):
+            result.append(data1[i]^data2[i])
+        return result
 
-    # 扩展置换EP
-    def EP_Transform(self, data):
+    # S盒运算
+    def SBox(self, data):
+        left= data[0:4]
+        right = data[4:8]
+        print(left)
+        print(right)
+        row = left[0]*2+left[3]
+        col = left[1]*2+left[2]
+        s0 = self.S0[row][col]
+        row = right[0]*2+right[3]
+        col = right[1]*2+right[2]
+        s1 = self.S1[row][col]
+        result=[]
+        result.append(s0//2)
+        result.append(s0%2)
+        result.append(s1//2)
+        result.append(s1%2)
+        return result
+    # P4直接置换
+    def P4Function(self, data):
+        result = []
+        for i in range(4):
+            result.append(data[self.P4[i]-1])
+        return result
 
-    # 10bits密钥K生成
-    def Key_Generate(self, key):
 
-    # 子密钥K1和K2生成
-    def SubKey_Generate(self, key):
-
-    #
+#测试
+sdes = SDES()
+text=[0,1,1,1,0,0,1,1]
+print(sdes.SBox(text))
