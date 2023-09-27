@@ -57,6 +57,9 @@ class SDES:
             result.append(data[self.P4[i]-1])
         return result
 
+# 按间距中的绿色按钮以运行脚本。
+if __name__ == '__main__':
+    print_hi('PyCharm')
 
 #测试
 sdes = SDES()
