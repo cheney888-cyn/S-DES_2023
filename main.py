@@ -1,16 +1,34 @@
-# 这是一个示例 Python 脚本。
+class SDES:
+    def __init__(self):
+        # 初始置换IP置换表
+        self.IP = [2, 6, 3, 1, 4, 8, 5, 7]
+        # 初始逆置换IP^-1置换表
+        self.IP_INV = [4, 1, 3, 5, 7, 2, 8, 6]
+        # 扩展置换EP置换表
+        self.EP = [4, 1, 2, 3, 2, 3, 4, 1]
+        # P4置换表
+        self.P4 = [2, 4, 3, 1]
+        # P8置换表
+        self.P8 = [6, 3, 7, 4, 8, 5, 10, 9]
+        # P10置换表
+        self.P10 = [3, 5, 2, 7, 4, 0, 1, 9, 8, 6]
+        # S-盒S0和S1
+        self.S0 = [[1, 0, 3, 2], [3, 2, 1, 0], [0, 2, 1, 3], [3, 1, 3, 2]]
+        self.S1 = [[0, 1, 2, 3], [2, 0, 1, 3], [3, 0, 1, 0], [2, 1, 0, 3]]
 
-# 按 ⌃R 执行或将其替换为您的代码。
-# 按 双击 ⇧ 在所有地方搜索类、文件、工具窗口、操作和设置。
+    # 初始置换IP
+    def IP_Transform(self, data):
 
+    # 初始逆置换IP^-1
+    def IP_INV_Transform(self, data):
 
-def print_hi(name):
-    # 在下面的代码行中使用断点来调试脚本。
-    print(f'Hi, {name}')  # 按 ⌘F8 切换断点。
+    # 扩展置换EP
+    def EP_Transform(self, data):
 
+    # 10bits密钥K生成
+    def Key_Generate(self, key):
 
-# 按间距中的绿色按钮以运行脚本。
-if __name__ == '__main__':
-    print_hi('PyCharm')
+    # 子密钥K1和K2生成
+    def SubKey_Generate(self, key):
 
-# 访问 https://www.jetbrains.com/help/pycharm/ 获取 PyCharm 帮助
+    #
