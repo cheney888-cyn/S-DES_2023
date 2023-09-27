@@ -18,6 +18,70 @@ class SDES:
         # spbox置换表
         self.SPBOX = [2, 4, 3, 1]
 
+    # 初始置换IP
+    def IP_Transform(self, data):
+        output = [0] * 8
+
+        for i in range(8):
+            output[i] = data[self.IP[i] - 1]
+
+        return output
+
+    # 初始逆置换IP^-1
+    def IP_INV_Transform(self, data):
+        output = [0] * 8
+
+        for i in range(8):
+            output[i] = data[self.IP_INV[i] - 1]
+
+        return output
+
+    # 扩展置换EP
+    def EP_Transform(self, data):
+        output = [0] * 8
+
+        for i in range(8):
+            output[i] = data[self.EP[i] - 1]
+
+        return output
+
+    # 10bits密钥K生成
+    def Key_Generate(self, key):
+
+        # P10置换
+        p10_key = [0] * 10
+        for i in range(10):
+            p10_key[i] = key[self.P10[i] - 1]
+
+        # 循环左移
+        left_key = p10_key[:5]
+        right_key = p10_key[5:]
+        left_key = left_key[1:] + left_key[:1]
+        right_key = right_key[1:] + right_key[:1]
+
+        # P8置换
+        p8_key = self.P8[5] + self.P8[2] + self.P8[6] + self.P8[3] + self.P8[7] + self.P8[4] + self.P8[9] + \
+                 self.P8[8]
+
+        return p8_key
+
+    # 子密钥K1和K2生成
+    def SubKey_Generate(self, key):
+        p10_key = self.Key_Generate(key)
+
+        # 循环左移一位得到K1
+        c1 = p10_key[:4]
+        d1 = p10_key[5:]
+        c1 = c1[1:] + c1[:1]
+        d1 = d1[1:] + d1[:1]
+        k1 = c1 + d1
+
+        # 循环左移两位得到K2
+        c2 = c1[1:] + c1[:1]
+        d2 = d1[1:] + d1[:1]
+        k2 = c2 + d2
+
+        return k1, k2
 
     # EP扩展
     def expandFunction(self, data):
@@ -57,9 +121,6 @@ class SDES:
             result.append(data[self.P4[i]-1])
         return result
 
-# 按间距中的绿色按钮以运行脚本。
-if __name__ == '__main__':
-    print_hi('PyCharm')
 
 #测试
 sdes = SDES()
