@@ -1,3 +1,4 @@
+import random
 class SDES:
     def __init__(self):
         # 初始置换IP置换表
@@ -36,20 +37,16 @@ class SDES:
 
         return output
 
-    # 扩展置换EP
-    def EP_Transform(self, data):
-        output = [0] * 8
-
-        for i in range(8):
-            output[i] = data[self.EP[i] - 1]
-
-        return output
+    def generate_random_key(self):
+        # 生成一个长度为10的随机二进制密钥
+        key = [random.randint(0, 1) for _ in range(10)]
+        return key
 
     # 10bits密钥K生成
     def Key_Generate(self, key):
 
         # P10置换
-        p10_key = [0] * 10
+        p10_key = key
         for i in range(10):
             p10_key[i] = key[self.P10[i] - 1]
 
@@ -58,29 +55,29 @@ class SDES:
         right_key = p10_key[5:]
         left_key = left_key[1:] + left_key[:1]
         right_key = right_key[1:] + right_key[:1]
+        q_key = left_key + right_key
 
         # P8置换
-        p8_key = self.P8[5] + self.P8[2] + self.P8[6] + self.P8[3] + self.P8[7] + self.P8[4] + self.P8[9] + \
-                 self.P8[8]
+        p8_key = [0] * 8
+        for i in range(8):
+            p8_key[i] = q_key[self.P8[i] - 1]
 
-        return p8_key
+        # return p8_key
 
-    # 子密钥K1和K2生成
-    def SubKey_Generate(self, key):
-        p10_key = self.Key_Generate(key)
-
+        # 子密钥K1和K2生成
         # 循环左移一位得到K1
-        c1 = p10_key[:4]
-        d1 = p10_key[5:]
-        c1 = c1[1:] + c1[:1]
-        d1 = d1[1:] + d1[:1]
-        k1 = c1 + d1
+        k1 = p8_key
 
-        # 循环左移两位得到K2
-        c2 = c1[1:] + c1[:1]
-        d2 = d1[1:] + d1[:1]
-        k2 = c2 + d2
+        # 循环左移三位得到K2
+        left_key1 = left_key[2:] + left_key[:2]
+        right_key1 = right_key[2:] + right_key[:2]
+        q_key1 = left_key1 + right_key1
 
+        # P8置换
+        p8_key1 = [0] * 8
+        for i in range(8):
+            p8_key1[i] = q_key1[self.P8[i] - 1]
+        k2 = p8_key1
         return k1, k2
 
     # EP扩展
@@ -101,7 +98,7 @@ class SDES:
         left= data[0:4]
         right = data[4:8]
         #print(left)
-        #print(right)
+        #rint(right)
         row = left[0]*2+left[3]
         col = left[1]*2+left[2]
         s0 = self.S0[row][col]
@@ -120,7 +117,8 @@ class SDES:
         for i in range(4):
             result.append(data[self.P4[i]-1])
         return result
-    # F函数
+        # F函数
+
     def FFunction(self, data, key):
         expand_data = self.expandFunction(data)
         xor_data = self.xorCalculation(expand_data, key)
@@ -128,28 +126,32 @@ class SDES:
         p4_data = self.P4Function(sbox_data)
         return p4_data
 
-    # 拆分
+        # 拆分
+
     def split(self, data):
         return data[0:4], data[4:8]
-    # 加密
+        # 加密
+
     def encrypt(self, data, key):
-        k1, k2 = self.SubKey_Generate(key)
+        k1, k2 = self.Key_Generate(key)
         ipData = self.IP_Transform(data)
         left, right = self.split(ipData)
         fk1Data = self.FFunction(right, k1)
         xorData1 = self.xorCalculation(left, fk1Data)
-        print(xorData1)
+        #print(xorData1)
         fk2Data = self.FFunction(xorData1, k2)
         xorData2 = self.xorCalculation(fk2Data, right)
-        print(xorData2)
+        #print(xorData2)
         Data = xorData2 + xorData1
-        print(Data)
+        #print(Data)
         ipInvdata = self.IP_INV_Transform(Data)
         return ipInvdata
 
 
-#测试
-sdes = SDES()
-text=[0,0,0,1,1,0,1,1]
-key=[1,0,1,0,0,1,0,0]
-print(sdes.encrypt(text,key))
+#
+# #测试
+# sdes = SDES()
+# text=[1,0,1,0,1,0,1,0]
+# key=[0,1,0,1,1,1,1,1,1,0]
+# print(sdes.encrypt(text,key))
+# #print(sdes.generate_random_key())
