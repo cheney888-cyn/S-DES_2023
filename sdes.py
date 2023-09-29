@@ -12,7 +12,7 @@ class SDES:
         # P8置换表
         self.P8 = [6, 3, 7, 4, 8, 5, 10, 9]
         # P10置换表
-        self.P10 = [3, 5, 2, 7, 4, 0, 1, 9, 8, 6]
+        self.P10 = [3, 5, 2, 7, 4, 10, 1, 9, 8, 6]
         # S-盒S0和S1
         self.S0 = [[1, 0, 3, 2], [3, 2, 1, 0], [0, 2, 1, 3], [3, 1, 0, 2]]
         self.S1 = [[0, 1, 2, 3], [2, 3, 1, 0], [3, 0, 1, 2], [2, 1, 0, 3]]
@@ -44,33 +44,28 @@ class SDES:
 
     # 10bits密钥K生成
     def Key_Generate(self, key):
-
         # P10置换
-        p10_key = key
+        p10_key = []
         for i in range(10):
-            p10_key[i] = key[self.P10[i] - 1]
-
+            p10_key.append(key[self.P10[i] - 1])
+        print("p10_key")
+        print(p10_key)
         # 循环左移
         left_key = p10_key[:5]
         right_key = p10_key[5:]
         left_key = left_key[1:] + left_key[:1]
         right_key = right_key[1:] + right_key[:1]
         q_key = left_key + right_key
-
         # P8置换
         p8_key = [0] * 8
         for i in range(8):
             p8_key[i] = q_key[self.P8[i] - 1]
-
-        # return p8_key
-
         # 子密钥K1和K2生成
-        # 循环左移一位得到K1
+        # 循环左移1位得到K1
         k1 = p8_key
-
-        # 循环左移三位得到K2
-        left_key1 = left_key[2:] + left_key[:2]
-        right_key1 = right_key[2:] + right_key[:2]
+        # 循环左移2位得到K2
+        left_key1 = left_key[1:] + left_key[:1]
+        right_key1 = right_key[1:] + right_key[:1]
         q_key1 = left_key1 + right_key1
 
         # P8置换
@@ -131,7 +126,6 @@ class SDES:
     def split(self, data):
         return data[0:4], data[4:8]
         # 加密
-
     def encrypt(self, data, key):
         k1, k2 = self.Key_Generate(key)
         ipData = self.IP_Transform(data)
@@ -147,11 +141,23 @@ class SDES:
         ipInvdata = self.IP_INV_Transform(Data)
         return ipInvdata
 
+    #解密
+    def decrypt(self, data, key):
+        k1, k2 = self.Key_Generate(key)
+        ipData = self.IP_Transform(data)
+        left, right = self.split(ipData)
+        fk1Data = self.FFunction(right, k2)
+        xorData1 = self.xorCalculation(left, fk1Data)
+        fk2Data = self.FFunction(xorData1, k1)
+        xorData2 = self.xorCalculation(fk2Data, right)
+        Data = xorData2 + xorData1
+        ipInvdata = self.IP_INV_Transform(Data)
+        return ipInvdata
 
 #
 # #测试
-# sdes = SDES()
+sdes = SDES()
 # text=[1,0,1,0,1,0,1,0]
-# key=[0,1,0,1,1,1,1,1,1,0]
-# print(sdes.encrypt(text,key))
+key=[1,0,1,0,1,0,1,0,1,0]
+print(sdes.Key_Generate(key))
 # #print(sdes.generate_random_key())

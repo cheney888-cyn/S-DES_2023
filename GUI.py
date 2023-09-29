@@ -14,17 +14,22 @@ class SDESApp(QWidget):
         layout = QVBoxLayout()
 
         # 明文输入框
-        self.plain_text_label = QLabel('明文或密文 (8位二进制):')
+        self.plain_text_label = QLabel('明文 (8位二进制):')
         self.plain_text_input = QLineEdit()
         layout.addWidget(self.plain_text_label)
         layout.addWidget(self.plain_text_input)
 
+        # 密文输入框
+        self.cipher_text_label = QLabel('密文 (8位二进制):')
+        self.cipher_text_input = QLineEdit()
+        layout.addWidget(self.cipher_text_label)
+        layout.addWidget(self.cipher_text_input)
         # 密钥输入框
         self.key_label = QLabel('密钥 (10位二进制):')
         self.key_input = QLineEdit()
         layout.addWidget(self.key_label)
         layout.addWidget(self.key_input)
-
+        
         # 生成密钥按钮
         self.generate_key_button = QPushButton('生成密钥')
         self.generate_key_button.clicked.connect(self.generate_key)
@@ -125,10 +130,61 @@ class SDESApp(QWidget):
                 encrypted_text = " ".join(["".join(map(str, cipher)) for cipher in ciphertextlist])
                 self.result_label.setText(f'加密结果: {encrypted_text}')
 
-
-
     def decrypt(self):
-        return
+        ciphertext = self.cipher_text_input.text()
+        key = self.key_input.text()
+        self.ASCII = False  # 设置为False
+
+        # 检查是否为空
+        if len(ciphertext) == 0:
+            QMessageBox.critical(self, '错误', '必须输入密文')
+            return
+        # 检查密文是否全为0或1
+        for i in range(len(ciphertext)):
+            if ciphertext[i] != '0' and ciphertext[i] != '1':
+                self.ASCII = True
+                break
+        ciphertextlist = []
+        if self.ASCII:
+            print("ASCII解密")
+            # ASCII解密展示，将ASCII字符转换为二进制字符串
+            for char in ciphertext:
+                ascii_code = ord(char)
+                binary_representation = bin(ascii_code)[2:].zfill(8)
+                ciphertextlist.append([int(bit) for bit in binary_representation])
+        else:
+            print("二进制解密")
+            # 检查密文是否为8位
+            if len(ciphertext) % 8 != 0:
+                QMessageBox.critical(self, '错误', '密文必须为多个8位二进制字符')
+                return
+            for i in range(0, len(ciphertext), 8):
+                ciphertextlist.append([int(bit) for bit in ciphertext[i:i + 8]])
+
+        sdes = SDES()
+        plaintextlist = []
+        for i in range(len(ciphertextlist)):
+            plaintext = sdes.decrypt(ciphertextlist[i], [int(bit) for bit in key])
+            # 显示解密结果
+            print(plaintext)
+            if self.ASCII:
+                # ASCII解密展示，将二进制字符串转换为ASCII字符
+                binary_string = ''.join(map(str, plaintext))
+                # 将二进制字符串转换为整数
+                ascii_code = int(binary_string, 2)
+                # 将整数转换为字符
+                if ascii_code > 127:
+                    utf8_character = chr(ascii_code).encode('utf-8')
+                    plaintextlist.append(utf8_character.decode('utf-8'))
+                else:
+                    # 否则将整数转换为ASCII字符
+                    plaintextlist.append(chr(ascii_code))
+            else:
+                # 二进制解密展示
+                plaintextlist.append("".join(map(str, plaintext)))
+
+        decrypted_text = "".join(plaintextlist)
+        self.result_label.setText(f'解密结果: {decrypted_text}')
 
     def export_data(self):
         plaintext = self.plain_text_input.text()
