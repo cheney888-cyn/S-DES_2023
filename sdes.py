@@ -31,10 +31,8 @@ class SDES:
     # 初始逆置换IP^-1
     def IP_INV_Transform(self, data):
         output = [0] * 8
-
         for i in range(8):
             output[i] = data[self.IP_INV[i] - 1]
-
         return output
 
     def generate_random_key(self):
@@ -67,7 +65,6 @@ class SDES:
         left_key1 = left_key[1:] + left_key[:1]
         right_key1 = right_key[1:] + right_key[:1]
         q_key1 = left_key1 + right_key1
-
         # P8置换
         p8_key1 = [0] * 8
         for i in range(8):
@@ -121,7 +118,6 @@ class SDES:
         p4_data = self.P4Function(sbox_data)
         return p4_data
 
-        # 拆分
 
     def split(self, data):
         return data[0:4], data[4:8]
@@ -156,8 +152,8 @@ class SDES:
 
 #
 # #测试
-sdes = SDES()
-# text=[1,0,1,0,1,0,1,0]
-key=[1,0,1,0,1,0,1,0,1,0]
-print(sdes.Key_Generate(key))
-# #print(sdes.generate_random_key())
+# sdes = SDES()
+# # text=[1,0,1,0,1,0,1,0]
+# key=[1,0,1,0,1,0,1,0,1,0]
+# print(sdes.Key_Generate(key))
+# # #print(sdes.generate_random_key())

@@ -1,11 +1,13 @@
 import time
 from sdes import SDES
+
+
 def brute_force_decrypt(ciphertext, known_plaintexts, max_key_attempts=1024):
     sdes = SDES()
     start_time = time.time()  # 记录开始时间
 
     key_list = []
-    for key in range(39,max_key_attempts):
+    for key in range(39, max_key_attempts):
         key_binary = bin(key)[2:].zfill(10)  # 将整数密钥转换为10位二进制表示
         flag = 0
         for i in range(len(known_plaintexts)):
@@ -34,20 +36,14 @@ def brute_force_decrypt(ciphertext, known_plaintexts, max_key_attempts=1024):
 
 if __name__ == "__main__":
     known_plaintexts = [
-        [1,0,1,1,1,0,0,1],
-        [1,1,1,1,1,1,0,0],
-        [0,1,1,0,1,0,1,0],
-        # [1,1,1,1,1,1,1,1],
-        # [0,0,0,1,0,0,0,1]
-        # 已知的明文
+        [1,0,1,0,1,1,0,0],
+        [1,0,1,0,1,1,1,1],
+        [0,1,0,1,0,0,1,1],
     ]
     ciphertexts = [
-        [0,1,0,1,1,0,0,0],
-        [1,0,1,0,1,0,1,0],
-        [0,1,0,1,0,1,0,1],
-        # [1,0,1,1,0,0,0,0],
-        # [0,1,0,0,1,0,1,0]
-        # 对应的密文
+        [1,1,0,0,1,1,0,1],
+        [1,1,1,1,1,0,1,1],
+        [1,1,0,0,0,0,0,1],
     ]
     found_key, elapsed_time = brute_force_decrypt(ciphertexts, known_plaintexts)
     if found_key:
