@@ -684,7 +684,7 @@ def brute_force_decrypt(ciphertext, known_plaintexts, max_key_attempts=1024):
     start_time = time.time()  # 记录开始时间
 
     key_list = []
-    for key in range(39, max_key_attempts):
+    for key in range(0, max_key_attempts):
         key_binary = bin(key)[2:].zfill(10)  # 将整数密钥转换为10位二进制表示
         flag = 0
         for i in range(len(known_plaintexts)):
