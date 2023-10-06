@@ -118,7 +118,6 @@ class SDES:
         p4_data = self.P4Function(sbox_data)
         return p4_data
 
-
     def split(self, data):
         return data[0:4], data[4:8]
         # 加密
