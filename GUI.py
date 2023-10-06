@@ -190,7 +190,6 @@ class SDESApp(QWidget):
         plaintext = self.plain_text_input.text()
         key = self.key_input.text()
         result = self.result_label.text()
-
         # 使用文件对话框选择保存文件路径
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
