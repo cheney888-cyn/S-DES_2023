@@ -5,9 +5,8 @@ from sdes import SDES
 def brute_force_decrypt(ciphertext, known_plaintexts, max_key_attempts=1024):
     sdes = SDES()
     start_time = time.time()  # 记录开始时间
-
     key_list = []
-    for key in range(39, max_key_attempts):
+    for key in range(0, max_key_attempts):
         key_binary = bin(key)[2:].zfill(10)  # 将整数密钥转换为10位二进制表示
         flag = 0
         for i in range(len(known_plaintexts)):
@@ -30,7 +29,7 @@ def brute_force_decrypt(ciphertext, known_plaintexts, max_key_attempts=1024):
         elapsed_time = end_time - start_time
         return key_list, elapsed_time
     else:
-        
+
         # 如果遍历所有可能的密钥都没有匹配，返回 None 表示失败
         return None, None
 
