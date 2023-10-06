@@ -30,6 +30,7 @@ def brute_force_decrypt(ciphertext, known_plaintexts, max_key_attempts=1024):
         elapsed_time = end_time - start_time
         return key_list, elapsed_time
     else:
+        
         # 如果遍历所有可能的密钥都没有匹配，返回 None 表示失败
         return None, None
 
